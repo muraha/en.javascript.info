@@ -4,7 +4,7 @@ A popup window is one of the oldest methods to show additional document to user.
 
 Basically, you just run:
 ```js
-window.open('http://javascript.info/')
+window.open('https://javascript.info/')
 ```
 
 ... And it will open a new window with given URL. Most modern browsers are configured to open new tabs instead of separate windows.
@@ -17,7 +17,20 @@ In the past evil sites abused popups a lot. A bad page could open tons of popup 
 
 **Most browsers block popups if they are called outside of user-triggered event handlers like `onclick`.**
 
-If you think about it, that's a bit tricky. If the code is directly in an `onclick` handler, then that's easy. But what is the popup opens in `setTimeout`?
+For example:
+```js
+// popup blocked
+window.open('https://javascript.info');
+
+// popup allowed
+button.onclick = () => {
+  window.open('https://javascript.info');
+};
+```
+
+This way users are somewhat protected from unwanted popups, but the functionality is not disabled totally.
+
+What if the popup opens from `onclick`, but after `setTimeout`? That's a bit tricky.
 
 Try this code:
 
@@ -28,7 +41,7 @@ setTimeout(() => window.open('http://google.com'), 3000);
 
 The popup opens in Chrome, but gets blocked in Firefox.
 
-...And this works in Firefox too:
+...If we decrease the delay, the popup works in Firefox too:
 
 ```js run
 // open after 1 seconds
@@ -39,15 +52,11 @@ The difference is that Firefox treats a timeout of 2000ms or less are acceptable
 
 ## Modern usage
 
-As of now, we have many methods to load and show data on-page with JavaScript. But there are still situations when a popup works best.
+As of now, we have many methods to load and show data on-page with JavaScript. But there are still situations when a popup works good, because:
 
-For instance, many shops use online chats for consulting people. A visitor clicks on the button, it runs `window.open` and opens the popup with the chat.
-
-Why a popup is good here, why not in-page?
-
-1. A popup is a separate window with its own independent JavaScript environment. So a chat service doesn't need to integrate with scripts of the main shop site.
-2. A popup is very simple to attach to a site, little to no overhead. It's only a small button, without additional scripts.
-3. A popup may persist even if the user left the page. For example, a consult advices the user to visit the page of a new "Super-Cooler" goodie. The user goes there in the main window without leaving the chat.
+1. A popup is a separate window with its own independent JavaScript environment. So opening a popup with a third-party non-trusted site is safe.
+2. It's very easy to open a popup, little to no overhead. 
+3. A popup may persist even if the user left the page. In also can navigate (change URL) in the opener window.
 
 ## window.open
 
@@ -105,7 +114,7 @@ Most browsers show the example above as required.
 Rules for omitted settings:
 
 - If there is no 3rd argument in the `open` call, or it is empty, then the default window parameters are used.
-- If there is a string of params, but some yes/no features are omitted, then the omitted features are disabled, if the browser allows that. So if you specify params, make sure you explicitly set all required features to yes.
+- If there is a string of params, but some `yes/no` features are omitted, then the omitted features assumed to have `no` value. So if you specify params, make sure you explicitly set all required features to yes.
 - If there is no `left/top` in params, then the browser tries to open a new window near the last opened window.
 - If there is no `width/height`, then the new window will be the same size as the last opened.
 
